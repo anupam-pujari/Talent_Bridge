@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - TalentBridge{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Edit Profile</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                       value="{{ current_user.first_name }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       value="{{ current_user.last_name }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="department" class="form-label">Department</label>
+                                <select class="form-select" id="department" name="department">
+                                    <option value="">Select Department</option>
+                                    <option value="IT" {% if current_user.department == 'IT' %}selected{% endif %}>Information Technology</option>
+                                    <option value="HR" {% if current_user.department == 'HR' %}selected{% endif %}>Human Resources</option>
+                                    <option value="Marketing" {% if current_user.department == 'Marketing' %}selected{% endif %}>Marketing</option>
+                                    <option value="Sales" {% if current_user.department == 'Sales' %}selected{% endif %}>Sales</option>
+                                    <option value="Finance" {% if current_user.department == 'Finance' %}selected{% endif %}>Finance</option>
+                                    <option value="Operations" {% if current_user.department == 'Operations' %}selected{% endif %}>Operations</option>
+                                    <option value="Customer Service" {% if current_user.department == 'Customer Service' %}selected{% endif %}>Customer Service</option>
+                                    <option value="Legal" {% if current_user.department == 'Legal' %}selected{% endif %}>Legal</option>
+                                    <option value="Design" {% if current_user.department == 'Design' %}selected{% endif %}>Design</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="location" class="form-label">Location</label>
+                                <select class="form-select" id="location" name="location">
+                                    <option value="">Select Location</option>
+                                    <option value="New York" {% if current_user.location == 'New York' %}selected{% endif %}>New York</option>
+                                    <option value="San Francisco" {% if current_user.location == 'San Francisco' %}selected{% endif %}>San Francisco</option>
+                                    <option value="Chicago" {% if current_user.location == 'Chicago' %}selected{% endif %}>Chicago</option>
+                                    <option value="Austin" {% if current_user.location == 'Austin' %}selected{% endif %}>Austin</option>
+                                    <option value="Boston" {% if current_user.location == 'Boston' %}selected{% endif %}>Boston</option>
+                                    <option value="Seattle" {% if current_user.location == 'Seattle' %}selected{% endif %}>Seattle</option>
+                                    <option value="Los Angeles" {% if current_user.location == 'Los Angeles' %}selected{% endif %}>Los Angeles</option>
+                                    <option value="Remote" {% if current_user.location == 'Remote' %}selected{% endif %}>Remote</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" 
+                               value="{{ current_user.phone or '' }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="skills" class="form-label">Skills & Expertise</label>
+                        <textarea class="form-control" id="skills" name="skills" rows="3" 
+                                  placeholder="e.g., Python, JavaScript, Project Management, Data Analysis (comma-separated)">{{ current_user.skills or '' }}</textarea>
+                        <div class="form-text">Separate skills with commas. This helps with job matching and auto-filling applications.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="resume" class="form-label">Resume</label>
+                        <input type="file" class="form-control" id="resume" name="resume" accept=".pdf,.doc,.docx">
+                        <div class="form-text">
+                            Upload your latest resume (PDF, DOC, or DOCX format, max 16MB).
+                            {% if current_user.resume_filename %}
+                            <br><strong>Current resume:</strong> {{ current_user.resume_filename }}
+                            <br><small class="text-info">Upload a new file to replace the current resume.</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('profile.profile') }}" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

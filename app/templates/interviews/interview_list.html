@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Interview Management - TalentBridge{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1>Interview Management</h1>
+        <p class="lead">Manage scheduled interviews and track progress</p>
+    </div>
+</div>
+
+<!-- Status Filter -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="status" class="form-label">Interview Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="">All Statuses</option>
+                            <option value="scheduled" {% if current_filter == 'scheduled' %}selected{% endif %}>Scheduled</option>
+                            <option value="completed" {% if current_filter == 'completed' %}selected{% endif %}>Completed</option>
+                            <option value="cancelled" {% if current_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                            <option value="rescheduled" {% if current_filter == 'rescheduled' %}selected{% endif %}>Rescheduled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        {% if interviews.items %}
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Candidate</th>
+                                    <th>Position</th>
+                                    <th>Date & Time</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for interview in interviews.items %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ interview.application.applicant.get_full_name() }}</strong><br>
+                                            <small class="text-muted">{{ interview.application.applicant.email }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ interview.application.job.title }}</strong><br>
+                                            <small class="text-muted">{{ interview.application.job.department }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ interview.scheduled_date.strftime('%b %d, %Y') }}</strong><br>
+                                            <small class="text-muted">{{ interview.scheduled_date.strftime('%I:%M %p') }}</small><br>
+                                            <small class="text-muted">{{ interview.duration_minutes }} min</small>
+                                        </td>
+                                        <td>{{ interview.interview_type.title() }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if interview.status == 'scheduled' %}info{% elif interview.status == 'completed' %}success{% elif interview.status == 'cancelled' %}danger{% else %}warning{% endif %}">
+                                                {{ interview.status.title() }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
+                                                        data-bs-toggle="dropdown">
+                                                    Actions
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item" href="{{ url_for('applications.application_detail', application_id=interview.application.id) }}">View Application</a></li>
+                                                    {% if interview.status == 'scheduled' %}
+                                                        <li><a class="dropdown-item" href="{{ url_for('interviews.reschedule_interview', interview_id=interview.id) }}">Reschedule</a></li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li>
+                                                            <form method="POST" action="{{ url_for('interviews.update_interview', interview_id=interview.id) }}" class="d-inline">
+                                                                <input type="hidden" name="status" value="completed">
+                                                                <button type="submit" class="dropdown-item">Mark Completed</button>
+                                                            </form>
+                                                        </li>
+                                                        <li>
+                                                            <form method="POST" action="{{ url_for('interviews.update_interview', interview_id=interview.id) }}" class="d-inline">
+                                                                <input type="hidden" name="status" value="cancelled">
+                                                                <button type="submit" class="dropdown-item text-danger"
+                                                                        onclick="return confirm('Are you sure you want to cancel this interview?')">Cancel</button>
+                                                            </form>
+                                                        </li>
+                                                    {% endif %}
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Pagination -->
+            {% if interviews.pages > 1 %}
+                <nav aria-label="Interviews pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if interviews.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('interviews.interview_list', page=interviews.prev_num, status=current_filter) }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        {% for page_num in interviews.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != interviews.page %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('interviews.interview_list', page=page_num, status=current_filter) }}">{{ page_num }}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ page_num }}</span>
+                                    </li>
+                                {% endif %}
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if interviews.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('interviews.interview_list', page=interviews.next_num, status=current_filter) }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-info mt-4" role="alert">
+                <h4 class="alert-heading">No Interviews Found</h4>
+                <p>There are no interviews matching your current filter.</p>
+                <hr>
+                <p class="mb-0">
+                    To see interviews listed here, make sure you have scheduled interviews for candidates in the <strong>Manage Applications</strong> section.
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

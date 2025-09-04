@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Post New Job - TalentBridge{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Post New Job Opening</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Job Title</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="job_type" class="form-label">Job Type</label>
+                                <select class="form-select" id="job_type" name="job_type" required>
+                                    <option value="Full-time">Full-time</option>
+                                    <option value="Part-time">Part-time</option>
+                                    <option value="Contract">Contract</option>
+                                    <option value="Internship">Internship</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="department" class="form-label">Department</label>
+                                <select class="form-select" id="department" name="department" required>
+                                    <option value="">Select Department</option>
+                                    <option value="IT">Information Technology</option>
+                                    <option value="HR">Human Resources</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Sales">Sales</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Operations">Operations</option>
+                                    <option value="Customer Service">Customer Service</option>
+                                    <option value="Legal">Legal</option>
+                                    <option value="Design">Design</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="location" class="form-label">Location</label>
+                                <select class="form-select" id="location" name="location" required>
+                                    <option value="">Select Location</option>
+                                    <option value="New York">New York</option>
+                                    <option value="San Francisco">San Francisco</option>
+                                    <option value="Chicago">Chicago</option>
+                                    <option value="Austin">Austin</option>
+                                    <option value="Boston">Boston</option>
+                                    <option value="Seattle">Seattle</option>
+                                    <option value="Los Angeles">Los Angeles</option>
+                                    <option value="Remote">Remote</option>
+                                    <option value="Hybrid">Hybrid</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="salary_range" class="form-label">Salary Range (Optional)</label>
+                                <input type="text" class="form-control" id="salary_range" name="salary_range" 
+                                       placeholder="e.g., $80,000 - $120,000">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="deadline" class="form-label">Application Deadline (Optional)</label>
+                                <input type="date" class="form-control" id="deadline" name="deadline">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Job Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="6" required 
+                                  placeholder="Provide a detailed description of the role, responsibilities, and what the candidate will be doing..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="requirements" class="form-label">Requirements</label>
+                        <textarea class="form-control" id="requirements" name="requirements" rows="4" 
+                                  placeholder="List the required qualifications, experience, education, etc..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="skills_required" class="form-label">Required Skills</label>
+                        <input type="text" class="form-control" id="skills_required" name="skills_required" 
+                               placeholder="e.g., Python, JavaScript, SQL, Project Management (comma-separated)">
+                        <div class="form-text">Separate skills with commas</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('jobs.job_list') }}" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Post Job</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

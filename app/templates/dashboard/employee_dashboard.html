@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Dashboard - TalentBridge{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1>Welcome, {{ current_user.get_full_name() }}!</h1>
+        <p class="lead">Discover new opportunities and track your applications</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Job Opportunities</h5>
+                <a href="{{ url_for('jobs.job_list') }}" class="btn btn-outline-primary btn-sm">View All Jobs</a>
+            </div>
+            <div class="card-body">
+                {% if recent_jobs %}
+                    {% for job in recent_jobs %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <h6><a href="{{ url_for('jobs.job_detail', job_id=job.id) }}" class="text-decoration-none">{{ job.title }}</a></h6>
+                        <p class="text-muted mb-1">
+                            <i class="fas fa-building"></i> {{ job.department }} | 
+                            <i class="fas fa-map-marker-alt"></i> {{ job.location }} | 
+                            <i class="fas fa-calendar"></i> Posted {{ job.created_at.strftime('%b %d, %Y') }}
+                        </p>
+                        <p class="mb-0">{{ job.description[:150] }}...</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No recent job postings available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">My Applications</h5>
+            </div>
+            <div class="card-body">
+                {% if my_applications %}
+                    {% for application in my_applications %}
+                    <div class="border-bottom pb-2 mb-2">
+                        <h6 class="mb-1">{{ application.job.title }}</h6>
+                        <span class="badge bg-{% if application.status == 'submitted' %}secondary{% elif application.status == 'interview' %}warning{% elif application.status == 'offer' %}success{% else %}danger{% endif %}">
+                            {{ application.status.title() }}
+                        </span>
+                        <p class="text-muted small mb-0">Applied {{ application.applied_at.strftime('%b %d') }}</p>
+                    </div>
+                    {% endfor %}
+                    <a href="{{ url_for('applications.my_applications') }}" class="btn btn-outline-primary btn-sm">View All Applications</a>
+                {% else %}
+                    <p class="text-muted">No applications yet.</p>
+                    <a href="{{ url_for('jobs.job_list') }}" class="btn btn-primary btn-sm">Browse Jobs</a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('jobs.job_list') }}" class="btn btn-outline-primary">Browse Jobs</a>
+                    <a href="{{ url_for('profile.edit_profile') }}" class="btn btn-outline-secondary">Update Profile</a>
+                    <a href="{{ url_for('interviews.interview_list') }}" class="btn btn-outline-info">My Interviews</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

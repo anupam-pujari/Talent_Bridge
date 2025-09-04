@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Apply for {{ job.title }} - TalentBridge{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Apply for: {{ job.title }}</h4>
+                <p class="text-muted mb-0">{{ job.department }} • {{ job.location }}</p>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="cover_letter" class="form-label">Cover Letter</label>
+                        <textarea class="form-control" id="cover_letter" name="cover_letter" rows="8" 
+                                  placeholder="Tell us why you're interested in this position and why you'd be a great fit...">{% if current_user.skills %}
+Based on my background in {{ current_user.department }} and experience with {{ current_user.skills }}, I am excited to apply for the {{ job.title }} position.
+
+I believe my skills align well with your requirements and I would welcome the opportunity to contribute to {{ job.department }} team.{% endif %}</textarea>
+                        <div class="form-text">Optional: Explain why you're interested in this role and highlight relevant experience.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="resume" class="form-label">Resume</label>
+                        <input type="file" class="form-control" id="resume" name="resume" accept=".pdf,.doc,.docx">
+                        <div class="form-text">
+                            Upload your latest resume (PDF, DOC, or DOCX format, max 16MB).
+                            {% if current_user.resume_filename %}
+                            <br><strong>Current resume on file:</strong> {{ current_user.resume_filename }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <h6 class="alert-heading">Your Profile Information</h6>
+                        <p class="mb-1"><strong>Name:</strong> {{ current_user.get_full_name() }}</p>
+                        <p class="mb-1"><strong>Email:</strong> {{ current_user.email }}</p>
+                        <p class="mb-1"><strong>Department:</strong> {{ current_user.department or 'Not specified' }}</p>
+                        <p class="mb-1"><strong>Location:</strong> {{ current_user.location or 'Not specified' }}</p>
+                        {% if current_user.skills %}
+                        <p class="mb-1"><strong>Skills:</strong> {{ current_user.skills }}</p>
+                        {% endif %}
+                        <hr>
+                        <p class="mb-0">
+                            <small>This information will be included with your application. 
+                            <a href="{{ url_for('profile.edit_profile') }}">Update your profile</a> if needed.</small>
+                        </p>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('jobs.job_detail', job_id=job.id) }}" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Submit Application</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

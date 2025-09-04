@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Applications - TalentBridge{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1>Manage Applications</h1>
+        <p class="lead">Review and process candidate applications</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="">All Statuses</option>
+                            <option value="submitted" {% if current_filters.status == 'submitted' %}selected{% endif %}>Submitted</option>
+                            <option value="screening" {% if current_filters.status == 'screening' %}selected{% endif %}>Screening</option>
+                            <option value="interview" {% if current_filters.status == 'interview' %}selected{% endif %}>Interview</option>
+                            <option value="offer" {% if current_filters.status == 'offer' %}selected{% endif %}>Offer</option>
+                            <option value="rejected" {% if current_filters.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                            <option value="withdrawn" {% if current_filters.status == 'withdrawn' %}selected{% endif %}>Withdrawn</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="job_id" class="form-label">Job Position</label>
+                        <select class="form-select" id="job_id" name="job_id">
+                            <option value="">All Positions</option>
+                            {% for job in jobs %}
+                            <option value="{{ job.id }}" {% if current_filters.job_id == job.id %}selected{% endif %}>
+                                {{ job.title }} ({{ job.department }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        {% if applications.items %}
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Candidate</th>
+                                <th>Position</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                                <th>Applied Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for application in applications.items %}
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>{{ application.applicant.get_full_name() }}</strong><br>
+                                        <small class="text-muted">{{ application.applicant.email }}</small><br>
+                                        {% if application.applicant.department %}
+                                        <small class="text-muted">Current: {{ application.applicant.department }}</small>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>{{ application.job.title }}</strong><br>
+                                    <small class="text-muted">{{ application.job.location }}</small>
+                                </td>
+                                <td>{{ application.job.department }}</td>
+                                <td>
+                                    <span class="badge bg-{% if application.status == 'submitted' %}secondary{% elif application.status == 'screening' %}info{% elif application.status == 'interview' %}warning{% elif application.status == 'offer' %}success{% elif application.status == 'rejected' %}danger{% else %}secondary{% endif %}">
+                                        {{ application.status.replace('_', ' ').title() }}
+                                    </span>
+                                </td>
+                                <td>{{ application.applied_at.strftime('%b %d, %Y') }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{{ url_for('applications.application_detail', application_id=application.id) }}" 
+                                           class="btn btn-outline-primary">View</a>
+                                        {% if application.status == 'screening' %}
+                                        <a href="{{ url_for('interviews.schedule_interview', application_id=application.id) }}" 
+                                           class="btn btn-outline-success">Schedule Interview</a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        {% if applications.pages > 1 %}
+        <nav aria-label="Applications pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if applications.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('applications.manage_applications', page=applications.prev_num, **current_filters) }}">Previous</a>
+                </li>
+                {% endif %}
+                
+                {% for page_num in applications.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != applications.page %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('applications.manage_applications', page=page_num, **current_filters) }}">{{ page_num }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                        {% endif %}
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if applications.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('applications.manage_applications', page=applications.next_num, **current_filters) }}">Next</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <div class="alert alert-info" role="alert">
+            <h4 class="alert-heading">No Applications Found</h4>
+            <p>There are no applications matching your current filters.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

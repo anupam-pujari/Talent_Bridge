@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Schedule Interview - TalentBridge{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Schedule Interview</h4>
+                <p class="text-muted mb-0">{{ application.job.title }} - {{ application.applicant.get_full_name() }}</p>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6>Candidate Information</h6>
+                        <p class="mb-1"><strong>Name:</strong> {{ application.applicant.get_full_name() }}</p>
+                        <p class="mb-1"><strong>Email:</strong> {{ application.applicant.email }}</p>
+                        <p class="mb-1"><strong>Current Dept:</strong> {{ application.applicant.department or 'Not specified' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Position Details</h6>
+                        <p class="mb-1"><strong>Title:</strong> {{ application.job.title }}</p>
+                        <p class="mb-1"><strong>Department:</strong> {{ application.job.department }}</p>
+                        <p class="mb-1"><strong>Location:</strong> {{ application.job.location }}</p>
+                    </div>
+                </div>
+                
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="scheduled_date" class="form-label">Interview Date</label>
+                                <input type="date" class="form-control" id="scheduled_date" name="scheduled_date" 
+                                       min="{{ (datetime.utcnow() + timedelta(days=1)).strftime('%Y-%m-%d') }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="scheduled_time" class="form-label">Interview Time</label>
+                                <input type="time" class="form-control" id="scheduled_time" name="scheduled_time" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="duration" class="form-label">Duration (minutes)</label>
+                                <select class="form-select" id="duration" name="duration">
+                                    <option value="30">30 minutes</option>
+                                    <option value="45">45 minutes</option>
+                                    <option value="60" selected>60 minutes</option>
+                                    <option value="90">90 minutes</option>
+                                    <option value="120">2 hours</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="interview_type" class="form-label">Interview Type</label>
+                                <select class="form-select" id="interview_type" name="interview_type" required>
+                                    <option value="in-person">In-Person</option>
+                                    <option value="video">Video Call</option>
+                                    <option value="phone">Phone</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="location_or_link" class="form-label">Location/Meeting Link</label>
+                        <input type="text" class="form-control" id="location_or_link" name="location_or_link" 
+                               placeholder="Conference Room B or https://zoom.us/j/123456789" required>
+                        <div class="form-text">Provide the meeting room or video conference link</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="interviewer_email" class="form-label">Interviewer Email</label>
+                        <input type="email" class="form-control" id="interviewer_email" name="interviewer_email" 
+                               value="{{ current_user.email }}" required>
+                        <div class="form-text">Email of the person conducting the interview</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Interview Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                  placeholder="Any special instructions or notes for the interview..."></textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('applications.application_detail', application_id=application.id) }}" 
+                           class="btn btn-outline-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Schedule Interview</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

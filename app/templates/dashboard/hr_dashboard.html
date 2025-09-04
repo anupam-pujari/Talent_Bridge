@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}HR Dashboard - TalentBridge{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1>HR Dashboard</h1>
+        <p class="lead">Manage jobs, applications, and internal talent mobility</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">{{ stats.total_jobs }}</h5>
+                <p class="card-text">Total Jobs</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">{{ stats.active_jobs }}</h5>
+                <p class="card-text">Active Jobs</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">{{ stats.total_applications }}</h5>
+                <p class="card-text">Total Applications</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h5 class="card-title">{{ stats.pending_applications }}</h5>
+                <p class="card-text">Pending Review</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Applications</h5>
+                <a href="{{ url_for('applications.manage_applications') }}" class="btn btn-outline-primary btn-sm">Manage All</a>
+            </div>
+            <div class="card-body">
+                {% if recent_applications %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Candidate</th>
+                                <th>Job Title</th>
+                                <th>Status</th>
+                                <th>Applied Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for application in recent_applications %}
+                            <tr>
+                                <td>{{ application.applicant.get_full_name() }}</td>
+                                <td>{{ application.job.title }}</td>
+                                <td>
+                                    <span class="badge bg-{% if application.status == 'submitted' %}secondary{% elif application.status == 'interview' %}warning{% elif application.status == 'offer' %}success{% else %}danger{% endif %}">
+                                        {{ application.status.title() }}
+                                    </span>
+                                </td>
+                                <td>{{ application.applied_at.strftime('%b %d, %Y') }}</td>
+                                <td>
+                                    <a href="{{ url_for('applications.application_detail', application_id=application.id) }}" class="btn btn-outline-primary btn-sm">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No recent applications.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('jobs.post_job') }}" class="btn btn-primary">Post New Job</a>
+                    <a href="{{ url_for('applications.manage_applications') }}" class="btn btn-outline-primary">Manage Applications</a>
+                    <a href="{{ url_for('interviews.interview_list') }}" class="btn btn-outline-info">Schedule Interviews</a>
+                    <a href="{{ url_for('jobs.job_list') }}" class="btn btn-outline-secondary">View All Jobs</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
